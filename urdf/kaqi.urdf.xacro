@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       name="kaqi" >
+
+
+    <xacro:include filename="$(find kaqi_description)/urdf/calibrate.xacro" />
+    <xacro:include filename="$(find kaqi_description)/urdf/materials.xacro" />
+    <xacro:include filename="$(find kaqi_description)/urdf/kaqi.gazebo.xacro" />
+    <xacro:include filename="$(find kaqi_description)/urdf/library.urdf.xacro" />
+
+
+    <link name="base_footprint">
+    </link>
+
+    <joint name="base_footprint_joint" type="fixed">
+      <origin xyz="0 0 ${base_height}" rpy="0 0 0" />
+      <parent link="base_footprint"/>
+      <child link="base_link"/>
+    </joint>
+
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.59157" />
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1" />
+    </inertial>
+    <visual>
+      <origin xyz="-0.13 0 0" rpy="${M_PI/2.0} 0 ${-M_PI/2.0}" />
+      <geometry>
+          <mesh filename="package://kaqi_description/meshes/base_link.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 0.5" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="-0.13 0 0.0025" rpy="0 0 0" />
+      <geometry>
+        <box size=".32 .28 .005"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="left_wheel_joint" type="continuous">
+    <origin xyz="0 ${wheel_offset} ${wheel_radius-base_height}" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <parent link="base_link"/>
+    <child link="left_wheel_link"/>
+    <limit effort="60.5" velocity="100"/>
+    <safety_controller  k_velocity="10" />
+    <calibration rising="0" />
+    <dynamics damping="1.0" friction="0.0" />
+  </joint>
+
+  <link name="left_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.15556" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 0" />
+      <geometry>
+        <cylinder length="0.030" radius="${wheel_radius}"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 0" />
+      <geometry>
+        <cylinder length="0.030" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <joint name="right_wheel_joint" type="continuous">
+    <origin xyz="0 ${0-wheel_offset} ${wheel_radius-base_height}" rpy="0 0 0" />
+    <axis xyz="0 1 0" />
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <limit effort="60.5" velocity="100"/>
+    <safety_controller  k_velocity="10" />
+    <calibration rising="0" />
+    <dynamics damping="1.0" friction="0.0" />
+  </joint>
+
+  <link name="right_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.15556" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+    <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 0" />
+    <geometry>
+      <cylinder length="0.030" radius="${wheel_radius}"/>
+    </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 0" />
+      <geometry>
+        <cylinder length="0.030" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+  </link>
+
+<!-- Caster -->
+  <joint name="caster_base_joint" type="fixed">
+    <origin xyz="-0.23 0 ${0.071-base_height}" rpy="0 0 0" />
+    <parent link="base_link"/>
+    <child link="caster_base_link"/>
+  </joint>
+
+  <link name="caster_base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.016939" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 -0.001" rpy="${M_PI/2.0} 0 0" />
+      <geometry>
+        <mesh filename="package://kaqi_description/meshes/caster_base.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.003" rpy="0 0 0" />
+      <geometry>
+        <box size=".055 .046 .006"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="caster_rotate_joint" type="continuous">
+    <origin xyz="0.0 0.0 -0.006" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <parent link="caster_base_link"/>
+    <child link="caster_rotate_link"/>
+  </joint>
+
+  <link name="caster_rotate_link">
+    <inertial>
+      <origin xyz="0 0 0.015" rpy="0 0 0" />
+      <mass value="0.0043659" />
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="${-M_PI/2.0} 0 0" />
+      <geometry>
+        <mesh filename="package://kaqi_description/meshes/caster_rotate.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="0.3 0.3 0.3 1" />
+      </material>
+    </visual>
+    <!--
+    <collision>
+      <origin xyz="0 0 0" rpy="${-M_PI/2.0} 0 0" />
+      <geometry>
+        <mesh filename="package://kaqi_description/meshes/caster_rotate.stl" />
+      </geometry>
+    </collision>
+    -->
+  </link>
+
+  <joint name="caster_wheel_joint" type="continuous">
+      <origin xyz="-0.02 0.0 -0.04" rpy="0 0 0" />
+      <axis xyz="0 1 0" />
+      <parent link="caster_rotate_link"/>
+      <child link="caster_wheel_link"/>
+  </joint>
+
+
+  <link name="caster_wheel_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.037975" />
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 0" />
+      <geometry>
+        <mesh filename="package://kaqi_description/meshes/caster_wheel.stl" />
+      </geometry>
+      <material name="">
+        <color rgba="1.0 0.27 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 0" />
+      <geometry>
+        <cylinder length="0.011" radius="0.025"/>
+      </geometry>
+    </collision>
+  </link>
+
+<!-- Stacks -->
+
+  <kaqi_standoff_xx parent="base_link" number="0" x_loc="-0.01" y_loc="-0.08" z_loc="0.005" len="10" />
+  <kaqi_standoff_xx parent="base_link" number="1" x_loc="-0.01" y_loc="0.08" z_loc="0.005" len="10" />
+  <kaqi_standoff_xx parent="base_link" number="2" x_loc="-0.25" y_loc="0.08" z_loc="0.005" len="10" />
+  <kaqi_standoff_xx parent="base_link" number="3" x_loc="-0.25" y_loc="-0.08" z_loc="0.005" len="10" />
+
+  <kaqi_plate1 parent="base_link" number="0" x_loc="-0.13" y_loc="0" z_loc="0.105"/>
+
+  <kaqi_standoff_xx parent="plate1_0_link" number="0" x_loc="-0.12" y_loc="0.12" z_loc="0.005" len="${standoff_middle_length}" />
+  <kaqi_standoff_xx parent="plate1_0_link" number="1" x_loc="-0.12" y_loc="-0.12" z_loc="0.005"  len="${standoff_middle_length}"/>
+  <kaqi_standoff_xx parent="plate1_0_link" number="2" x_loc="${standoff_middle_front_offset_x}" y_loc="${standoff_middle_front_offset_y}" z_loc="0.005" len="${standoff_middle_length}"/>
+  <kaqi_standoff_xx parent="plate1_0_link" number="3" x_loc="${standoff_middle_front_offset_x}" y_loc="${-standoff_middle_front_offset_y}" z_loc="0.005" len="${standoff_middle_length}"/>
+
+  <kaqi_plate1 parent="plate1_0_link" number="1" x_loc="0" y_loc="0" z_loc="${standoff_middle_length/100.0+0.005}"/>
+
+  <kaqi_standoff_kinect parent="plate1_1_link" number="0" x_loc="0" y_loc="0.098" z_loc="0.005" len="${cam_pz-0.024}" />
+  <kaqi_standoff_kinect parent="plate1_1_link" number="1" x_loc="0" y_loc="-0.098" z_loc="0.005" len="${cam_pz-0.024}"/>
+
+<!-- Sensors -->
+  <!-- Gyro -->
+  <joint name="gyro_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0 0 0.02" rpy="0 0 0" />
+    <parent link="base_link"/>
+    <child link="gyro_link"/>
+  </joint>
+
+  <link name="gyro_link">
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  <!-- IMU -->
+  <joint name="imu_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0 0 0.07" rpy="0 ${M_PI} 0" />
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+  </joint>
+
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.001" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.0001" />
+    </inertial>
+  </link>
+
+  <!-- kinect -->
+  <joint name="head_kinect_joint" type="fixed">
+    <origin xyz="${cam_px} ${cam_py} ${cam_pz}" rpy="${cam_or} ${cam_op} ${cam_oy}"/>
+    <parent link="plate1_1_link"/>
+    <child link="head_kinect_link" />
+  </joint>
+
+  <link name="head_kinect_link">
+    <inertial>
+      <mass value="0.1" />
+      <origin xyz="0 0 0" />
+      <inertia  ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01" />
+    </inertial>
+    <visual>
+      <origin xyz="${-cam_px+0.02} ${-cam_py} 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://kaqi_description/meshes/kinect.dae" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <!--
+      <collision>
+        <origin xyz="${-cam_px+0.02} ${-cam_py} 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://kaqi_description/meshes/kinect.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </collision>
+    -->
+    </link>
+
+    <joint name="head_kinect_optical_joint" type="fixed">
+      <origin xyz="-0.03 0 0" rpy="0 0 0"/>
+      <parent link="head_kinect_link"/>
+      <child link="head_kinect_optical_link"/>
+    </joint>
+    <link name="head_kinect_optical_link">
+      <inertial>
+        <mass value="0.1" />
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <inertia ixx="0.01"  ixy="0.0"  ixz="0.0"
+                 iyy="0.01"  iyz="0.0"  izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0.0 0.0 0" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.0005"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <joint name="head_kinect_optical_frame_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <parent link="head_kinect_optical_link"/>
+      <child link="head_kinect_optical_frame"/>
+    </joint>
+    <link name="head_kinect_optical_frame"/>
+
+    <!-- UTM30LX laser range finder -->
+<!--
+    <joint name="base_laser_joint" type="fixed">
+      <origin xyz="${laser_px} ${laser_py} ${laser_pz}" rpy="${laser_ox} ${laser_oy} ${laser_oz}" />
+      <parent link="base_link"/>
+      <child link="base_laser_link" />
+    </joint>
+
+    <link name="base_laser_link">
+      <inertial>
+        <mass value="0.1" />
+        <origin xyz="0 0 0" />
+        <inertia  ixx="0.01" ixy="0" ixz="0"
+                  iyy="0.01" iyz="0" izz="0.01" />
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="${M_PI/2.0} 0 ${M_PI/2.0}"/>
+        <geometry>
+          <mesh filename="package://kaqi_description/meshes/hokuyo_utm30lx.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="hokuyo_color">
+          <color rgba="0.4 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.0435" rpy="0 0 0" />
+        <geometry>
+          <box size=".06 .06 .087"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="base_laser_frame_joint" type="fixed">
+      <origin xyz="0 0 0.055" rpy="0 0 0" />
+      <parent link="base_laser_link"/>
+      <child link="base_laser_frame" />
+    </joint>
+
+    <link name="base_laser_frame">
+      <inertial>
+        <mass value="0.1" />
+        <origin xyz="0 0 0" />
+        <inertia  ixx="0.01" ixy="0" ixz="0"
+                  iyy="0.01" iyz="0" izz="0.01" />
+      </inertial>
+    </link>
+
+-->
+
+</robot>

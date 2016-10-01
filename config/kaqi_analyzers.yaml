@@ -1,0 +1,78 @@
+analyzers:
+  devices:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Devices
+    analyzers:
+      joystick:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Joystick
+        expected: 'ps3_joy: Joystick Driver Status'
+        num_items: 1
+        remove_prefix: 'ps3_joy'
+      sound:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Sound
+        num_items: 1
+        contains: 'sound_play'
+      serial:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Serial
+        num_items: 1
+        timeout: 5.0
+        contains: 'Serial Port'
+  nodes: 
+    type: diagnostic_aggregator/GenericAnalyzer
+    path: Nodes
+    num_items: 2
+    timeout: 5.0
+    contains: ['Node State']
+    expected: [
+      'base_driver_node: Node State',
+      'sound_play: Node State']
+  sensors:
+    type: diagnostic_aggregator/AnalyzerGroup
+    path: Sensors
+    analyzers:
+      kinect:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Kinect
+        num_items: 2
+        timeout: 5.0
+        contains: ['head_kinect/head_kinect_nodelet_manager']
+        expected: [
+          'head_kinect/head_kinect_nodelet_manager: RGB Image topic status',
+          'head_kinect/head_kinect_nodelet_manager: Depth Image topic status']
+        remove_prefix: 'head_kinect/head_kinect_nodelet_manager'
+      imu:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Imu
+        timeout: 5.0
+        expected: ['base_driver_node: Imu State']
+      odom:
+        type: diagnostic_aggregator/GenericAnalyzer
+        path: Odom
+        timeout: 5.0
+        expected: ['base_driver_node: Odometry State']
+  power:
+    type: diagnostic_aggregator/GenericAnalyzer
+    path: 'Power System'
+    timeout: 5.0
+    expected: ['Base Battery', 'Laptop Battery']
+  breakers:
+    type: diagnostic_aggregator/GenericAnalyzer
+    path: 'Breakers'
+    timeout: 5.0
+    num_items: 2
+    startwith: ['Breaker']
+    expected: ['Breaker: 0', 'Breaker: 1']
+  joints:
+    type: diagnostic_aggregator/GenericAnalyzer
+    path: Joints
+    timeout: 5.0
+    startswith: ['Joint']
+    expected: [
+      'Joint (left_wheel_joint)',
+      'Joint (right_wheel_joint)',
+      'Joint (caster_rotate_joint)',
+      'Joint (caster_wheel_joint)']
+
